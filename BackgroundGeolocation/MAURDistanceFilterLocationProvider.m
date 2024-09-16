@@ -20,7 +20,7 @@
 #define LOCATION_NOT_DETERMINED "User undecided on application's use of location services."
 
 static NSString * const TAG = @"DistanceFilterLocationProvider";
-static NSString * const Domain = @"com.marianhello";
+static NSString * const Domain = @"com.wrdhrd";
 
 
 enum {

@@ -40,7 +40,7 @@
 #define POSITION_UNAVAILABLE    2
 #define TIMEOUT                 3
 
-static NSString * const BGGeolocationDomain = @"com.marianhello";
+static NSString * const BGGeolocationDomain = @"com.wrdhrd";
 static NSString * const TAG = @"BgGeo";
 
 FMDBLogger *sqliteLogger;

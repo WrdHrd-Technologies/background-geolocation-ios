@@ -20,7 +20,7 @@
 #define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
 
 static NSString * const TAG = @"ActivityLocationProvider";
-static NSString * const Domain = @"com.marianhello";
+static NSString * const Domain = @"com.wrdhrd";
 
 @interface MAURActivityLocationProvider () <SOMotionDetectorDelegate>
 @end

@@ -20,7 +20,7 @@
 
 static MAURLocationManager* sharedCLDelegate = nil;
 static NSString *const TAG = @"MAURLocationManager";
-static NSString *const Domain = @"com.marianhello";
+static NSString *const Domain = @"com.wrdhrd";
 
 @implementation MAURLocationManager
 @synthesize locationManager, delegate;

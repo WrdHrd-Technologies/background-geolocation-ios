@@ -12,7 +12,7 @@
 #import "MAURLogging.h"
 
 static NSString * const TAG = @"RawLocationProvider";
-static NSString * const Domain = @"com.marianhello";
+static NSString * const Domain = @"com.wrdhrd";
 
 @implementation MAURRawLocationProvider {
 
