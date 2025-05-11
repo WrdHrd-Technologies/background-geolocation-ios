@@ -54,6 +54,8 @@
     @COMMA_SEP @LC_COLUMN_NAME_PROVIDER
     @COMMA_SEP @LC_COLUMN_NAME_LOCATION_PROVIDER
     @COMMA_SEP @LC_COLUMN_NAME_RECORDED_AT
+    @COMMA_SEP @LC_COLUMN_NAME_BATTERY_LEVEL
+    @COMMA_SEP @LC_COLUMN_NAME_CHARGING_FLAG
     @" FROM " @LC_TABLE_NAME @" WHERE " @LC_COLUMN_NAME_STATUS @" = ? ORDER BY " @LC_COLUMN_NAME_RECORDED_AT;
 
     [queue inDatabase:^(FMDatabase *database) {
@@ -71,8 +73,10 @@
             location.longitude = [NSNumber numberWithDouble:[rs doubleForColumnIndex:7]];
             location.provider = [rs stringForColumnIndex:8];
             location.locationProvider = [NSNumber numberWithInt:[rs intForColumnIndex:9]];
-            NSTimeInterval recordedAt = [rs longForColumnIndex:11];
+            NSTimeInterval recordedAt = [rs longForColumnIndex:10];
             location.recordedAt = [NSDate dateWithTimeIntervalSince1970:recordedAt];
+            location.batteryLevel =[NSNumber numberWithInt:[rs intForColumnIndex:11]];
+            location.isCharging =[NSNumber numberWithInt:[rs intForColumnIndex:12]];
 
             [locations addObject:location];
         }
@@ -102,6 +106,8 @@
     @COMMA_SEP @LC_COLUMN_NAME_LOCATION_PROVIDER
     @COMMA_SEP @LC_COLUMN_NAME_STATUS
     @COMMA_SEP @LC_COLUMN_NAME_RECORDED_AT
+    @COMMA_SEP @LC_COLUMN_NAME_BATTERY_LEVEL
+    @COMMA_SEP @LC_COLUMN_NAME_CHARGING_FLAG
     @" FROM " @LC_TABLE_NAME @" ORDER BY " @LC_COLUMN_NAME_RECORDED_AT;
 
     [queue inDatabase:^(FMDatabase *database) {
@@ -122,6 +128,8 @@
             location.isValid = [rs intForColumnIndex:10] == 1 ? YES : NO;
             NSTimeInterval recordedAt = [rs longForColumnIndex:11];
             location.recordedAt = [NSDate dateWithTimeIntervalSince1970:recordedAt];
+            location.batteryLevel =[NSNumber numberWithInt:[rs intForColumnIndex:12]];
+            location.isCharging =[NSNumber numberWithInt:[rs intForColumnIndex:13]];
 
             [locations addObject:location];
         }
@@ -150,6 +158,8 @@
         @COMMA_SEP @LC_COLUMN_NAME_LONGITUDE
         @COMMA_SEP @LC_COLUMN_NAME_PROVIDER
         @COMMA_SEP @LC_COLUMN_NAME_LOCATION_PROVIDER
+        @COMMA_SEP @LC_COLUMN_NAME_BATTERY_LEVEL
+        @COMMA_SEP @LC_COLUMN_NAME_CHARGING_FLAG
         @" FROM " @LC_TABLE_NAME @" WHERE " @LC_COLUMN_NAME_STATUS @" = ? ORDER BY " @LC_COLUMN_NAME_RECORDED_AT;
 
         FMResultSet *rs = [database executeQuery:sql, [NSString stringWithFormat:@"%ld", MAURLocationPostPending]];
@@ -166,6 +176,8 @@
             location.longitude = [NSNumber numberWithDouble:[rs doubleForColumnIndex:7]];
             location.provider = [rs stringForColumnIndex:8];
             location.locationProvider = [NSNumber numberWithInt:[rs intForColumnIndex:9]];
+            location.batteryLevel = [NSNumber numberWithInt:[rs intForColumnIndex:10]];
+            location.isCharging = [NSNumber numberWithInt:[rs intForColumnIndex:11]];
 
             [locations addObject:location];
         }
@@ -216,7 +228,9 @@
     @COMMA_SEP @LC_COLUMN_NAME_LOCATION_PROVIDER
     @COMMA_SEP @LC_COLUMN_NAME_STATUS
     @COMMA_SEP @LC_COLUMN_NAME_RECORDED_AT
-    @") VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+    @COMMA_SEP @LC_COLUMN_NAME_BATTERY_LEVEL
+    @COMMA_SEP @LC_COLUMN_NAME_CHARGING_FLAG
+    @") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     BOOL success = [database executeUpdate:sql,
         [NSNumber numberWithDouble:[location.time timeIntervalSince1970]],
@@ -229,7 +243,9 @@
         location.provider ?: [NSNull null],
         location.locationProvider ?: [NSNull null],
         location.isValid == YES ? @(1) : @(0),
-        recordedAt
+        recordedAt,
+        location.batteryLevel,
+        location.isCharging
     ];
 
     if (success) {
@@ -300,6 +316,8 @@
         @COMMA_SEP @LC_COLUMN_NAME_LOCATION_PROVIDER @EQ_BIND
         @COMMA_SEP @LC_COLUMN_NAME_STATUS @EQ_BIND
         @COMMA_SEP @LC_COLUMN_NAME_RECORDED_AT @EQ_BIND
+        @COMMA_SEP @LC_COLUMN_NAME_BATTERY_LEVEL @EQ_BIND
+        @COMMA_SEP @LC_COLUMN_NAME_CHARGING_FLAG @EQ_BIND
         @" WHERE " @LC_COLUMN_NAME_ID @EQ_BIND;
 
         BOOL success = [database executeUpdate:sql,
@@ -314,6 +332,8 @@
             location.locationProvider ?: [NSNull null],
             location.isValid == YES ? @(1) : @(0),
             recordedAt,
+            location.batteryLevel,
+            location.isCharging,
             locationId
         ];
 

@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "MAURLocation.h"
+#import "BatteryInfo.h"
 
 enum {
     TWO_MINUTES = 120,
@@ -70,11 +71,12 @@ MAURLocation* _location;
 
 @implementation MAURLocation
 
-@synthesize locationId, time, accuracy, altitudeAccuracy, speed, heading, altitude, latitude, longitude, provider, locationProvider, radius, isValid, recordedAt;
+@synthesize locationId, time, accuracy, altitudeAccuracy, speed, heading, altitude, latitude, longitude, provider, locationProvider, radius, isValid, recordedAt, batteryLevel, isCharging;
 
 + (instancetype) fromCLLocation:(CLLocation*)location;
 {
     MAURLocation *instance = [[MAURLocation alloc] init];
+    NSDictionary *batteryInfo = [BatteryInfo getBatteryLevelAndStatus];
 
     instance.time = location.timestamp;
     instance.accuracy = [NSNumber numberWithDouble:location.horizontalAccuracy];
@@ -84,7 +86,9 @@ MAURLocation* _location;
     instance.altitude = [NSNumber numberWithDouble:location.altitude];
     instance.latitude = [NSNumber numberWithDouble:location.coordinate.latitude];
     instance.longitude = [NSNumber numberWithDouble:location.coordinate.longitude];
-
+    
+    instance.batteryLevel = [NSNumber numberWithDouble:[[batteryInfo objectForKey:@"BatteryLevel"] floatValue]];
+    instance.isCharging = [NSNumber numberWithDouble:[[batteryInfo objectForKey:@"BatteryStatus"] floatValue]];
     return instance;
 }
 
@@ -96,6 +100,7 @@ MAURLocation* _location;
 + (NSDictionary*) toDictionary:(CLLocation*)location;
 {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:10];
+    NSDictionary *batteryInfo = [BatteryInfo getBatteryLevelAndStatus];
 
     NSNumber* timestamp = [NSNumber numberWithDouble:([location.timestamp timeIntervalSince1970] * 1000)];
     [dict setObject:timestamp forKey:@"time"];
@@ -107,6 +112,8 @@ MAURLocation* _location;
     [dict setObject:[NSNumber numberWithDouble:location.altitude] forKey:@"altitude"];
     [dict setObject:[NSNumber numberWithDouble:location.coordinate.latitude] forKey:@"latitude"];
     [dict setObject:[NSNumber numberWithDouble:location.coordinate.longitude] forKey:@"longitude"];
+    [dict setObject:[NSNumber numberWithDouble:[[batteryInfo objectForKey:@"BatteryLevel"] floatValue]] forKey:@"batteryLevel"];
+    [dict setObject:[NSNumber numberWithDouble:[[batteryInfo objectForKey:@"BatteryStatus"] floatValue]] forKey:@"isCharging"];
 
     return dict;
 }
@@ -162,6 +169,8 @@ MAURLocation* _location;
     if (locationProvider != nil) [dict setObject:locationProvider forKey:@"locationProvider"];
     if (radius != nil) [dict setObject:radius forKey:@"radius"];
     if (recordedAt != nil) [dict setObject:[NSNumber numberWithDouble:([recordedAt timeIntervalSince1970] * 1000)] forKey:@"recordedAt"];
+    if (batteryLevel != nil) [dict setObject:batteryLevel forKey:@"batteryLevel"];
+    if (isCharging != nil) [dict setObject:isCharging forKey:@"isCharging"];
 
     return dict;
 }
@@ -213,6 +222,12 @@ MAURLocation* _location;
     }
     if ([key isEqualToString:@"@recordedAt"]) {
         return [NSNumber numberWithDouble:([recordedAt timeIntervalSince1970] * 1000)];
+    }
+    if ([key isEqualToString:@"@batteryLevel"]) {
+        return batteryLevel;
+    }
+    if ([key isEqualToString:@"@isCharging"]) {
+        return isCharging;
     }
     
     return nil;
@@ -328,6 +343,7 @@ MAURLocation* _location;
 -(id) copyWithZone: (NSZone *) zone
 {
     MAURLocation *copy = [[[self class] allocWithZone: zone] init];
+    NSDictionary *batteryInfo = [BatteryInfo getBatteryLevelAndStatus];
     if (copy) {
         copy.time = time;
         copy.accuracy = accuracy;
@@ -341,6 +357,8 @@ MAURLocation* _location;
         copy.locationProvider = locationProvider;
         copy.radius = radius;
         copy.isValid = isValid;
+        copy.batteryLevel = [NSNumber numberWithDouble:[[batteryInfo objectForKey:@"BatteryLevel"] floatValue]];
+        copy.isCharging = [NSNumber numberWithDouble:[[batteryInfo objectForKey:@"BatteryStatus"] floatValue]];
     }
 
     return copy;

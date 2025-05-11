@@ -14,7 +14,7 @@
 @implementation MAURGeolocationOpenHelper
 
 static NSString *const kDatabaseName = @"cordova_bg_geolocation.db";
-static NSInteger const kDatabaseVersion = 3;
+static NSInteger const kDatabaseVersion = 4;
 
 - (instancetype)init
 {
@@ -80,6 +80,11 @@ static NSInteger const kDatabaseVersion = 3;
         case 2:
             [sql addObjectsFromArray: @[
                 [MAURConfigurationContract createTableSQL]
+            ]];
+        case 3:
+            [sql addObjectsFromArray: @[
+                @"ALTER TABLE " @LC_TABLE_NAME @" ADD COLUMN " @LC_COLUMN_NAME_BATTERY_LEVEL @" INTEGER",
+                @"ALTER TABLE " @LC_TABLE_NAME @" ADD COLUMN " @LC_COLUMN_NAME_CHARGING_FLAG @" INTEGER",
             ]];
             break; // break only for previous db version (cascade statements)
         default:

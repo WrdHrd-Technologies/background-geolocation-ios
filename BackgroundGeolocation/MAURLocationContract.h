@@ -23,6 +23,8 @@
 #define LC_COLUMN_NAME_LOCATION_PROVIDER   "service_provider"
 #define LC_COLUMN_NAME_STATUS              "valid"
 #define LC_COLUMN_NAME_RECORDED_AT         "recorded_at"
+#define LC_COLUMN_NAME_BATTERY_LEVEL       "battery_level"
+#define LC_COLUMN_NAME_CHARGING_FLAG       "charging_flag"
 
 @interface MAURLocationContract : NSObject
 
